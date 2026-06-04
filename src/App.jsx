@@ -16,6 +16,7 @@ import {
   CircleDot,
 } from "lucide-react";
 import Footer from "./components/Footer";
+import { Menu, RefreshCw, Shield } from "lucide-react";
 
 const latencyData = [
   { time: "14:45", wireguard: 31, headscale: 18 },
@@ -80,50 +81,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#050b16] text-white">
-      <Header />
-
       <main className="mx-auto max-w-7xl space-y-8 px-6 py-6">
-        {/* STATUS BAR */}
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-800 bg-slate-950/60 p-4 backdrop-blur-md">
-          <div className="flex items-center gap-6">
-            <span className="text-green-400">
-              ● Benchmark Running
-            </span>
-
-            <span className="text-slate-400">
-              Samples: 128
-            </span>
-
-            <span className="text-slate-400">
-              Duration: 00:01:43
-            </span>
-          </div>
-
-          <div className="flex rounded-lg border border-slate-700 overflow-hidden">
-            <button
-              onClick={() => setMode("wireguard")}
-              className={`px-4 py-2 text-sm ${
-                mode === "wireguard"
-                  ? "bg-blue-600"
-                  : "bg-slate-900"
-              }`}
-            >
-              WireGuard
-            </button>
-
-            <button
-              onClick={() => setMode("headscale")}
-              className={`px-4 py-2 text-sm ${
-                mode === "headscale"
-                  ? "bg-cyan-600"
-                  : "bg-slate-900"
-              }`}
-            >
-              Headscale
-            </button>
-          </div>
-        </div>
-
+        <Header mode={mode} setMode={(bool) => setMode(bool)} />
         {/* KPI SECTION */}
         <section>
           <h2 className="mb-4 text-xl font-semibold">
@@ -193,7 +152,7 @@ function App() {
             }}
           />
         </section>
-        
+
         {/* LATENCY */}
         <section>
           <h2 className="mb-4 text-xl font-semibold">
