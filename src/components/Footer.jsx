@@ -1,4 +1,3 @@
-
 export default function Footer() {
   return (
     <footer className="mt-12 border-t border-slate-800 bg-slate-950/40">
