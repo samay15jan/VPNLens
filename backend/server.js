@@ -6,7 +6,7 @@ const db               = require('./db');
 const { VALID_VPN, validateResult } = require('./validate');
 
 const app  = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
@@ -140,6 +140,32 @@ app.get('/api/summary', async (req, res) => {
   }
 });
 
+/**
+ * GET /health
+ *
+ * Container health check.
+ */
+app.get('/health', async (req, res) => {
+  try {
+    // Simple DB connectivity check
+    await db.getSummary();
+
+    res.status(200).json({
+      status: 'healthy',
+      service: 'vpnlens-backend',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString()
+    });
+  } catch (err) {
+    res.status(503).json({
+      status: 'unhealthy',
+      service: 'vpnlens-backend',
+      error: err.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // ─── 404 ─────────────────────────────────────────────────────────────────────
 
 app.use((req, res) => fail(res, `Cannot ${req.method} ${req.path}`, 404));
@@ -153,6 +179,7 @@ app.listen(PORT, () => {
   console.log(`  GET   /api/results[?vpn=wireguard|headscale&limit=N&offset=N]`);
   console.log(`  GET   /api/results/:id`);
   console.log(`  GET   /api/summary\n`);
+  console.log(`  GET   /health\n`);
 });
 
 module.exports = app;

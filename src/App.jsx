@@ -8,37 +8,45 @@ import StatCard from "./components/StatCard";
 import NetworkTopology from "./components/NetworkTopology";
 import BenchmarkHistory from "./components/BenchmarkHistory";
 import Footer from "./components/Footer";
+import StartBenchmarkModal from "./components/StartBenchmarkModal";
+import LiveBenchmarkView from "./components/LiveBenchmarkView";
+import ReportView from "./components/ReportView";
 
-import { Activity, Cpu, Clock3, CircleDot } from "lucide-react";
+import { Activity, Cpu, Clock3, CircleDot, Play } from "lucide-react";
 
-const API = "http://localhost:3000/api";
+const API = "https://backend.vpn.samay15jan.com/api";
 
-// summary.data is an array — index by vpn name for easy lookup
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
 function indexSummary(data) {
   if (!Array.isArray(data)) return {};
   return Object.fromEntries(data.map((row) => [row.vpn, row]));
 }
 
-// Parse the ISO timestamp the DB returns ("2026-06-10T16:08:56Z")
 function parseTs(ts) {
   if (!ts) return null;
   const d = new Date(ts);
   return isNaN(d) ? null : d;
 }
 
-// Transform flat results rows into {time, wireguard, headscale} chart points
-function toLatencyPoints(results) {
-  // Sort ascending so chart reads left→right in time order
-  const sorted = [...results].sort((a, b) => new Date(a.recorded_at) - new Date(b.recorded_at));
-  const byTime = {};
-  sorted.forEach((r) => {
-    if (!r.latency_avg) return;
-    const d = parseTs(r.recorded_at);
-    const t = d ? d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—";
-    if (!byTime[t]) byTime[t] = { time: t };
-    byTime[t][r.vpn] = r.latency_avg;
-  });
-  return Object.values(byTime).slice(-10);
+function toLatencyPoints(results, vpn) {
+  return results
+    .filter((r) => r.vpn === vpn && r.latency_avg != null)
+    .sort((a, b) => new Date(a.recorded_at) - new Date(b.recorded_at))
+    .slice(-10)
+    .map((r) => {
+      const d = parseTs(r.recorded_at);
+
+      return {
+        time: d
+          ? d.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+          : "—",
+        latency: r.latency_avg,
+      };
+    });
 }
 
 function toThroughputPoints(results, vpn, direction = "upload") {
@@ -59,28 +67,36 @@ function toBenchmarkRows(results) {
   return [...results]
     .sort((a, b) => new Date(b.recorded_at) - new Date(a.recorded_at))
     .map((r) => {
-    const d = parseTs(r.recorded_at);
-    return {
-    id: r.id,
-    timestamp: d ? d.toLocaleString() : "—",
-    mode: r.vpn === "wireguard" ? "WireGuard" : "Headscale",
-    duration: "02:00",
-    latency: r.latency_avg ?? "—",
-    packetLoss: r.packet_loss ?? "—",
-    throughput: r.throughput_upload ?? "—",
-    cpu: r.cpu_avg ?? "—",
-    status: r.runs_failed === 0 ? "Success" : "Partial",
-    };
-  });
+      const d = parseTs(r.recorded_at);
+      return {
+        id: r.id,
+        timestamp: d ? d.toLocaleString() : "—",
+        mode: r.vpn === "wireguard" ? "WireGuard" : "Headscale",
+        duration: "02:00",
+        latency: r.latency_avg ?? "—",
+        packetLoss: r.packet_loss ?? "—",
+        throughput: r.throughput_upload ?? "—",
+        cpu: r.cpu_avg ?? "—",
+        status: r.runs_failed === 0 ? "Success" : "Partial",
+      };
+    });
 }
 
+// ── App ───────────────────────────────────────────────────────────────────────
+
 function App() {
+  // view: "dashboard" | "live" | "report"
+  const [view, setView] = useState("dashboard");
+  const [showModal, setShowModal] = useState(false);
+  const [session, setSession] = useState(null);
+
   const [mode, setMode] = useState("wireguard");
   const [results, setResults] = useState([]);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState(null);
 
+  // ── Dashboard data polling ─────────────────────────────────────────────────
   const fetchData = useCallback(async () => {
     try {
       const [resRes, sumRes] = await Promise.all([
@@ -89,7 +105,6 @@ function App() {
       ]);
       const resJson = await resRes.json();
       const sumJson = await sumRes.json();
-
       if (resJson.success) setResults(resJson.data ?? []);
       if (sumJson.success) setSummary(indexSummary(sumJson.data));
       setLastRefresh(new Date());
@@ -101,50 +116,109 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (view !== "dashboard") return;
     fetchData();
-    // Poll every 15 seconds for live feel
     const id = setInterval(fetchData, 15000);
     return () => clearInterval(id);
+  }, [fetchData, view]);
+
+  // ── Session polling (live view) ────────────────────────────────────────────
+  const fetchSession = useCallback(async (sessionId) => {
+    try {
+      const res = await fetch(`${API}/benchmark/session/${sessionId}`);
+      const json = await res.json();
+      if (json.success) {
+        setSession(json.data);
+        if (json.data.phase === "done") {
+          // Refresh dashboard data so it's fresh when user goes back
+          fetchData();
+        }
+      }
+    } catch (e) {
+      console.error("Session poll failed:", e);
+    }
   }, [fetchData]);
 
-  // ── Derived data ──────────────────────────────────────────────
+  useEffect(() => {
+    if (view !== "live" || !session?.id) return;
+    if (session.phase === "done") return; // stop polling when done
+    const id = setInterval(() => fetchSession(session.id), 3000);
+    return () => clearInterval(id);
+  }, [view, session?.id, session?.phase, fetchSession]);
+
+  // ── Start benchmark ────────────────────────────────────────────────────────
+  async function handleStart(email) {
+    const res = await fetch(`${API}/benchmark/start`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error ?? "Failed to start benchmark");
+    setSession(json.data);
+    setShowModal(false);
+    setView("live");
+  }
+
+  // ── Derived dashboard data ─────────────────────────────────────────────────
   const currentVpnKey = mode === "wireguard" ? "wireguard" : "headscale";
   const otherVpnKey = mode === "wireguard" ? "headscale" : "wireguard";
-
   const currentStats = summary?.[currentVpnKey] ?? null;
   const otherStats = summary?.[otherVpnKey] ?? null;
 
-  const latencyData = results.length ? toLatencyPoints(results) : [
-    { time: "—", wireguard: 0, headscale: 0 },
-  ];
+  const wgLatency = results.length
+    ? toLatencyPoints(results, "wireguard")
+    : [{ time: "—", latency: 0 }];
 
+  const hsLatency = results.length
+    ? toLatencyPoints(results, "headscale")
+    : [{ time: "—", latency: 0 }];
   const wgThroughput = toThroughputPoints(results, "wireguard", "upload");
   const hsThroughput = toThroughputPoints(results, "headscale", "upload");
-
   const benchmarkRows = toBenchmarkRows(results);
 
-  // KPI values — actual API keys are latency_avg_avg, packet_loss_avg, cpu_avg_avg
   const avgLatency = currentStats?.latency_avg_avg ?? "—";
   const packetLoss = currentStats?.packet_loss_avg ?? "—";
   const cpuUsage = currentStats?.cpu_avg_avg ?? "—";
-
-  const latencyDiff =
-    currentStats && otherStats
-      ? (currentStats.latency_avg_avg - otherStats.latency_avg_avg).toFixed(1)
-      : null;
-  const packetDiff =
-    currentStats && otherStats
-      ? (currentStats.packet_loss_avg - otherStats.packet_loss_avg).toFixed(2)
-      : null;
-  const cpuDiff =
-    currentStats && otherStats
-      ? (currentStats.cpu_avg_avg - otherStats.cpu_avg_avg).toFixed(1)
-      : null;
-
   const otherLabel = mode === "wireguard" ? "vs Headscale:" : "vs WireGuard:";
+
+  const latencyDiff = currentStats && otherStats
+    ? (currentStats.latency_avg_avg - otherStats.latency_avg_avg).toFixed(1) : null;
+  const packetDiff = currentStats && otherStats
+    ? (currentStats.packet_loss_avg - otherStats.packet_loss_avg).toFixed(2) : null;
+  const cpuDiff = currentStats && otherStats
+    ? (currentStats.cpu_avg_avg - otherStats.cpu_avg_avg).toFixed(1) : null;
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+
+  if (view === "live" && session) {
+    return (
+      <LiveBenchmarkView
+        session={session}
+        onViewReport={() => setView("report")}
+        onBackToDashboard={() => setView("dashboard")}
+      />
+    );
+  }
+
+  if (view === "report" && session) {
+    return (
+      <ReportView
+        session={session}
+        onBack={() => setView("dashboard")}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#050b16] text-white">
+      {showModal && (
+        <StartBenchmarkModal
+          onClose={() => setShowModal(false)}
+          onStart={handleStart}
+        />
+      )}
+
       <main className="mx-auto max-w-7xl space-y-8 px-6 py-6">
         <Header
           mode={mode}
@@ -154,6 +228,22 @@ function App() {
           lastRefresh={lastRefresh}
           loading={loading}
         />
+
+        {/* Run Benchmark CTA */}
+        <div className="flex items-center justify-between rounded-xl border border-blue-500/20 bg-blue-500/5 px-6 py-4">
+          <div>
+            <p className="text-sm font-medium text-white">Ready to run a new benchmark?</p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Spins up both VMs, tests WireGuard + Headscale, emails you the report.
+            </p>
+          </div>
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-500 transition shrink-0"
+          >
+            <Play size={14} /> Run Benchmark
+          </button>
+        </div>
 
         {/* KPI SECTION */}
         <section>
@@ -210,10 +300,22 @@ function App() {
 
         {/* LATENCY */}
         <section>
-          <h2 className="mb-4 text-xl font-semibold">Latency Analysis</h2>
+          <h2 className="mb-4 text-xl font-semibold">
+            Latency Analysis
+          </h2>
+
           <div className="grid gap-6 lg:grid-cols-2">
-            <LatencyChart data={latencyData} highlightVpn="wireguard" />
-            <LatencyChart data={latencyData} highlightVpn="headscale" />
+            <LatencyChart
+              title="WireGuard Latency (ms)"
+              data={wgLatency}
+              color="#3b82f6"
+            />
+
+            <LatencyChart
+              title="Headscale Latency (ms)"
+              data={hsLatency}
+              color="#22d3ee"
+            />
           </div>
         </section>
 
