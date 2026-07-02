@@ -1,4 +1,4 @@
-name: Build Docker Compose
+name: Build & Publish Images
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   packages: write
 
 jobs:
-  build:
+  backend:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,13 +25,32 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build services
-        run: docker compose build
+      - name: Build & Push Backend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: ghcr.io/samay15jan/vpnlens-backend:latest
 
-      - name: Tag image
-        run: |
-          docker tag vpnlens-backend ghcr.io/${{ github.repository }}:latest
+  frontend:
+    runs-on: ubuntu-latest
 
-      - name: Push image
-        run: |
-          docker push ghcr.io/${{ github.repository }}:latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & Push Frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ghcr.io/samay15jan/vpnlens-frontend:latest

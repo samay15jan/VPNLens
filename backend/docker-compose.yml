@@ -1,6 +1,6 @@
 services:
   vpnlens-backend:
-    build: .
+    image: ghcr.io/samay15jan/vpnlens-backend:latest
     container_name: vpnlens-backend
     
     restart: unless-stopped
