@@ -1,0 +1,35 @@
+{
+    email samay15jan@gmail.com
+}
+
+# Portfolio
+# samay15jan.com, www.samay15jan.com {
+#     reverse_proxy host.docker.internal:3001
+# }
+
+# Mirrorverse
+# mirrorverse.samay15jan.com {
+#     reverse_proxy host.docker.internal:2425
+# }
+
+# Blog redirect
+# blog.samay15jan.com {
+#     redir https://mirrorverse.samay15jan.com/share/11Al6A7LRJC8Lwu-
+# }
+
+# VPNLens
+vpn.samay15jan.com {
+    reverse_proxy localhost:3000
+}
+
+backend.vpn.samay15jan.com {
+    reverse_proxy localhost:3001
+}
+
+wg.vpn.samay15jan.com {
+    reverse_proxy localhost:51821
+}
+
+hs.vpn.samay15jan.com {
+    reverse_proxy localhost:51822
+}

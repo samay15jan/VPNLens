@@ -33,7 +33,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-6 border-t border-slate-800 pt-4 text-center text-xs text-slate-500">
-          Final Year Project • B.Tech Information Technology • 2026
+          B.Tech Information Technology • 2026
         </div>
       </div>
     </footer>

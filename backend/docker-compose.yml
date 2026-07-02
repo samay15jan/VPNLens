@@ -2,7 +2,11 @@ services:
   vpnlens-backend:
     build: .
     container_name: vpnlens-backend
+    
     restart: unless-stopped
+
+    env_file:
+      - .env
 
     ports:
       - "3001:3001"

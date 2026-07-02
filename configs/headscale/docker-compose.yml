@@ -1,0 +1,14 @@
+services:
+  headscale:
+    image: headscale/headscale:0.28.0
+    container_name: headscale
+
+    command: serve
+
+    ports:
+      - "51822:8080"
+    volumes:
+      - ./config:/etc/headscale
+      - ./data:/var/lib/headscale
+
+    restart: unless-stopped

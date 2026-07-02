@@ -64,6 +64,21 @@ async function getDb() {
     );
   `);
 
+  db.run(`
+    CREATE TABLE IF NOT EXISTS benchmark_requests (
+      id                    INTEGER  PRIMARY KEY AUTOINCREMENT,
+      email                 TEXT     NOT NULL,
+      token                 TEXT     NOT NULL UNIQUE,
+      status                TEXT     NOT NULL DEFAULT 'pending'
+                                      CHECK(status IN ('pending','running','completed','failed')),
+      wireguard_result_id   INTEGER,
+      headscale_result_id   INTEGER,
+      error                 TEXT,
+      created_at            TEXT     NOT NULL,
+      completed_at          TEXT
+    );
+  `);
+
   persist();
   return db;
 }
@@ -83,7 +98,7 @@ function collect(stmt) {
   return rows;
 }
 
-// ─── public functions ────────────────────────────────────────────────────────
+// ─── results: public functions (unchanged) ──────────────────────────────────
 
 async function insertResult(p) {
   const d   = await getDb();
@@ -159,6 +174,7 @@ async function getAllResults({ vpn, limit, offset } = {}) {
 }
 
 async function getResultById(id) {
+  if (id == null) return null;
   const d    = await getDb();
   const stmt = d.prepare('SELECT * FROM results WHERE id = :id');
   stmt.bind({ ':id': +id });
@@ -168,7 +184,6 @@ async function getResultById(id) {
 async function getSummary() {
   const d = await getDb();
 
-  // Per-VPN aggregates for every metric column
   const metrics = [
     'latency_min', 'latency_avg', 'latency_max',
     'throughput_upload', 'throughput_download',
@@ -206,4 +221,67 @@ async function getSummary() {
   return collect(stmt);
 }
 
-module.exports = { insertResult, getAllResults, getResultById, getSummary };
+// ─── benchmark_requests: public functions (new) ──────────────────────────────
+
+async function createBenchmarkRequest({ email, token }) {
+  const d   = await getDb();
+  const now = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
+
+  d.run(`
+    INSERT INTO benchmark_requests (email, token, status, created_at)
+    VALUES (:email, :token, 'pending', :created_at)`,
+    { ':email': email, ':token': token, ':created_at': now }
+  );
+
+  const row = collect(
+    d.prepare('SELECT * FROM benchmark_requests WHERE id = last_insert_rowid()')
+  )[0];
+
+  persist();
+  return row;
+}
+
+// Whitelisted columns only — never build SQL from arbitrary caller keys.
+const BENCHMARK_REQUEST_UPDATABLE_FIELDS = [
+  'status', 'wireguard_result_id', 'headscale_result_id', 'error', 'completed_at',
+];
+
+async function updateBenchmarkRequest(id, patch) {
+  const d = await getDb();
+
+  const fields = Object.keys(patch).filter(k => BENCHMARK_REQUEST_UPDATABLE_FIELDS.includes(k));
+  if (!fields.length) return getBenchmarkRequestById(id);
+
+  const setClause = fields.map(f => `${f} = :${f}`).join(', ');
+  const params = { ':id': +id };
+  for (const f of fields) params[`:${f}`] = patch[f] ?? null;
+
+  d.run(`UPDATE benchmark_requests SET ${setClause} WHERE id = :id`, params);
+
+  const stmt = d.prepare('SELECT * FROM benchmark_requests WHERE id = :id');
+  stmt.bind({ ':id': +id });
+  const result = collect(stmt)[0] ?? null;
+
+  persist();
+  return result;
+}
+
+async function getBenchmarkRequestByToken(token) {
+  const d    = await getDb();
+  const stmt = d.prepare('SELECT * FROM benchmark_requests WHERE token = :token');
+  stmt.bind({ ':token': token });
+  return collect(stmt)[0] ?? null;
+}
+
+async function getBenchmarkRequestById(id) {
+  const d    = await getDb();
+  const stmt = d.prepare('SELECT * FROM benchmark_requests WHERE id = :id');
+  stmt.bind({ ':id': +id });
+  return collect(stmt)[0] ?? null;
+}
+
+module.exports = {
+  insertResult, getAllResults, getResultById, getSummary,
+  createBenchmarkRequest, updateBenchmarkRequest,
+  getBenchmarkRequestByToken, getBenchmarkRequestById,
+};

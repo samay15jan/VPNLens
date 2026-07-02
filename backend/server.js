@@ -1,11 +1,13 @@
 'use strict';
-
-const express          = require('express');
-const cors             = require('cors');
-const db               = require('./db');
+const dotenv = require('dotenv');
+dotenv.config();
+const express = require('express');
+const cors = require('cors');
+const db = require('./db');
 const { VALID_VPN, validateResult } = require('./validate');
+const benchmarkRouter = require('./benchmark');   // ← new
 
-const app  = express();
+const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(cors());
@@ -13,8 +15,8 @@ app.use(express.json());
 
 // ─── response helpers ────────────────────────────────────────────────────────
 
-const ok   = (res, data, status = 200) =>
-  res.status(status).json({ success: true,  data });
+const ok = (res, data, status = 200) =>
+  res.status(status).json({ success: true, data });
 
 const fail = (res, message, status = 400) =>
   res.status(status).json({ success: false, error: message });
@@ -90,8 +92,8 @@ app.get('/api/results', async (req, res) => {
 
   try {
     const rows = await db.getAllResults({
-      vpn:    vpn    ? vpn.toLowerCase()    : undefined,
-      limit:  limit  ? parseInt(limit, 10)  : undefined,
+      vpn: vpn ? vpn.toLowerCase() : undefined,
+      limit: limit ? parseInt(limit, 10) : undefined,
       offset: offset ? parseInt(offset, 10) : undefined,
     });
     return ok(res, rows);
@@ -166,6 +168,11 @@ app.get('/health', async (req, res) => {
   }
 });
 
+// ─── benchmark request flow (new) ───────────────────────────────────────────
+//   POST /api/benchmark/start
+//   GET  /results/:token
+app.use(benchmarkRouter);
+
 // ─── 404 ─────────────────────────────────────────────────────────────────────
 
 app.use((req, res) => fail(res, `Cannot ${req.method} ${req.path}`, 404));
@@ -179,6 +186,8 @@ app.listen(PORT, () => {
   console.log(`  GET   /api/results[?vpn=wireguard|headscale&limit=N&offset=N]`);
   console.log(`  GET   /api/results/:id`);
   console.log(`  GET   /api/summary\n`);
+  console.log(`  POST  /api/benchmark/start`);
+  console.log(`  GET   /results/:token\n`);
   console.log(`  GET   /health\n`);
 });
 
