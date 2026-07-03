@@ -12,8 +12,11 @@ function normalize(val, min, max, lowerIsBetter = false) {
 }
 
 export default function ReportView({ session, onBack }) {
-  const wg = session.wireguard_result ?? {};
-  const hs = session.headscale_result ?? {};
+  // Backend shape (GET /results/:token) is:
+  //   { token, email, status, error, created_at, completed_at, results: { wireguard, headscale } }
+  // NOT session.wireguard_result / session.headscale_result.
+  const wg = session.results?.wireguard ?? {};
+  const hs = session.results?.headscale ?? {};
 
   // Radar axes — normalize each so 100 = best
   const radarData = [
@@ -78,7 +81,8 @@ export default function ReportView({ session, onBack }) {
             <div>
               <h1 className="text-2xl font-semibold text-white">VPN Benchmark Report</h1>
               <p className="text-sm text-slate-400 mt-0.5">
-                Session {session.id} · {new Date(session.started_at ?? Date.now()).toLocaleString()}
+                {session.token ? `${session.token.slice(0, 12)}…` : "Report"} ·{" "}
+                {new Date(session.created_at ?? Date.now()).toLocaleString()}
               </p>
             </div>
           </div>
