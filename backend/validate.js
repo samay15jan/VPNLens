@@ -26,6 +26,11 @@ function validateResult(body) {
     errors.push(`\`vpn\` must be one of: ${VALID_VPN.join(', ')}`);
   }
 
+  // token (optional — links this leg's result back to its benchmark request)
+  if (body.token !== undefined && typeof body.token !== 'string') {
+    errors.push('`token` must be a string');
+  }
+
   // numeric fields
   for (const field of NUMERIC_FIELDS) {
     if (body[field] === undefined) continue;

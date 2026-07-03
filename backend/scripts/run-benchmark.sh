@@ -233,5 +233,9 @@ RESPONSE=$(curl -sS -X POST "$API_RESULTS_ENDPOINT" \
     -d "$PAYLOAD")
 
 log "Backend response: ${RESPONSE}"
-RESULT_ID=$(echo "$RESPONSE" | grep -o '"id":[0-9]*' | cut -d: -f2)
+if command -v jq &>/dev/null; then
+    RESULT_ID=$(echo "$RESPONSE" | jq -r '.data.id // empty')
+else
+    RESULT_ID=$(echo "$RESPONSE" | grep -o '"id":[0-9]*' | cut -d: -f2)
+fi
 echo "$RESULT_ID"

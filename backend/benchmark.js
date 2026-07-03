@@ -92,35 +92,17 @@ router.get('/results/:token', async (req, res) => {
 
 // ─── orchestration ───────────────────────────────────────────────────────────
 
-/**
- * run-benchmark.sh's final stdout line is the backend's own
- * POST /api/results response (it does `echo "$RESPONSE"` at the end),
- * e.g. { "success": true, "data": { "id": 42, ... } }. We reuse that to
- * learn the created row's id without modifying the (already tested) script.
- * On a switch.sh failure the script exits early and never echoes a
- * response, so this returns null in that case — treated as a failed leg.
- */
-function lastJsonLine(stdout) {
-  const lines = stdout.trim().split('\n').filter(Boolean);
-  for (let i = lines.length - 1; i >= 0; i--) {
-    try {
-      return JSON.parse(lines[i]);
-    } catch {
-      // not JSON — keep looking further up (stray output before the echo)
-    }
-  }
-  return null;
-}
-
+// run-benchmark.sh logs everything via `log()`, which writes to stderr —
+// the only thing it ever prints to stdout is the bare numeric result id
+// (or nothing, if switch.sh failed and it exited early before posting).
 async function runOneLeg(remoteDir, vpnArg, token) {
   const { code, stdout, stderr } = await sshExec(
     `cd ${remoteDir} && ./run-benchmark.sh ${vpnArg} ${token}`,
     { timeout: 4 * 60 * 1000 } // generous — ping + 2x iperf3 + recovery poll
   );
 
-  const parsed = lastJsonLine(stdout);
-  const resultId = parsed?.success ? Number(parsed.data?.id) : null;
-  
+  const resultId = Number(stdout.trim());
+
   if (!resultId) {
     console.error(`[benchmark] ${vpnArg} leg did not produce a result id (exit ${code}).\nstderr:\n${stderr}`);
   }

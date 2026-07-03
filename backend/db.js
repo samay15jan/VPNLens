@@ -31,6 +31,7 @@ async function getDb() {
     CREATE TABLE IF NOT EXISTS results (
       id                   INTEGER  PRIMARY KEY AUTOINCREMENT,
       vpn                  TEXT     NOT NULL CHECK(vpn IN ('wireguard','headscale')),
+      token                TEXT,
       recorded_at          TEXT     NOT NULL,
 
       -- Latency (ms)
@@ -79,6 +80,13 @@ async function getDb() {
     );
   `);
 
+  // Migration: DB files created before `token` existed on `results` won't
+  // get the column from CREATE TABLE IF NOT EXISTS above.
+  const resultCols = collect(db.prepare(`PRAGMA table_info(results)`)).map(c => c.name);
+  if (!resultCols.includes('token')) {
+    db.run(`ALTER TABLE results ADD COLUMN token TEXT`);
+  }
+
   persist();
   return db;
 }
@@ -106,7 +114,7 @@ async function insertResult(p) {
 
   d.run(`
     INSERT INTO results (
-      vpn, recorded_at,
+      vpn, token, recorded_at,
       latency_min, latency_avg, latency_max,
       throughput_upload, throughput_download,
       packet_loss,
@@ -116,7 +124,7 @@ async function insertResult(p) {
       runs_successful, runs_failed,
       notes
     ) VALUES (
-      :vpn, :recorded_at,
+      :vpn, :token, :recorded_at,
       :latency_min, :latency_avg, :latency_max,
       :throughput_upload, :throughput_download,
       :packet_loss,
@@ -128,6 +136,7 @@ async function insertResult(p) {
     )`,
     {
       ':vpn':                  p.vpn,
+      ':token':                p.token ?? null,
       ':recorded_at':          p.recorded_at || now,
       ':latency_min':          p.latency_min          ?? null,
       ':latency_avg':          p.latency_avg          ?? null,
@@ -179,6 +188,13 @@ async function getResultById(id) {
   const stmt = d.prepare('SELECT * FROM results WHERE id = :id');
   stmt.bind({ ':id': +id });
   return collect(stmt)[0] ?? null;
+}
+
+async function getResultsByToken(token) {
+  const d    = await getDb();
+  const stmt = d.prepare('SELECT * FROM results WHERE token = :token ORDER BY recorded_at ASC');
+  stmt.bind({ ':token': token });
+  return collect(stmt);
 }
 
 async function getSummary() {
@@ -281,7 +297,7 @@ async function getBenchmarkRequestById(id) {
 }
 
 module.exports = {
-  insertResult, getAllResults, getResultById, getSummary,
+  insertResult, getAllResults, getResultById, getResultsByToken, getSummary,
   createBenchmarkRequest, updateBenchmarkRequest,
   getBenchmarkRequestByToken, getBenchmarkRequestById,
 };
