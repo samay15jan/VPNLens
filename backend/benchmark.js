@@ -118,8 +118,9 @@ async function runOneLeg(remoteDir, vpnArg, token) {
     { timeout: 4 * 60 * 1000 } // generous — ping + 2x iperf3 + recovery poll
   );
 
-  const resultId = Number(stdout.trim());
-
+  const parsed = lastJsonLine(stdout);
+  const resultId = parsed?.success ? Number(parsed.data?.id) : null;
+  
   if (!resultId) {
     console.error(`[benchmark] ${vpnArg} leg did not produce a result id (exit ${code}).\nstderr:\n${stderr}`);
   }
