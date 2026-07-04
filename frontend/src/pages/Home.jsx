@@ -122,7 +122,7 @@ function toBenchmarkRows(results) {
 
 export default function Home() {
     const navigate = useNavigate();
-
+    const [success, setSuccess] = useState("");
     const [mode, setMode] =
         useState("wireguard");
 
@@ -174,16 +174,29 @@ export default function Home() {
         return () => clearInterval(id);
     }, [fetchData]);
 
+    useEffect(() => {
+        if (!success) return;
+
+        const timer = setTimeout(() => {
+            setSuccess("");
+        }, 5000);
+
+        return () => clearTimeout(timer);
+    }, [success]);
+
     async function handleStart(email) {
-        await startBenchmark(email);
+        try {
+            await startBenchmark(email);
 
-        setShowModal(false);
+            setShowModal(false);
 
-        alert(
-            "Benchmark started!\n\nYou'll receive an email with your report once the benchmark finishes."
-        );
+            setSuccess(
+                "We'll email you once the benchmark finishes and your report is ready."
+            );
+        } catch (err) {
+            console.error(err);
+        }
     }
-    
     const currentVpn =
         mode === "wireguard"
             ? "wireguard"
@@ -315,6 +328,26 @@ export default function Home() {
                     </button>
                 </div>
 
+                {success && (
+                    <div className="rounded-lg border border-green-500/20 bg-green-500/10 px-6 py-4">
+                        <div className="flex items-start gap-3">
+                            <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-green-500/20">
+                                ✓
+                            </div>
+
+                            <div>
+                                <p className="font-medium text-green-300">
+                                    Benchmark started successfully
+                                </p>
+
+                                <p className="mt-1 text-sm text-green-400/90">
+                                    {success}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                
                 {/* KPI */}
                 <section>
                     <h2 className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-500">

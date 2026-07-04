@@ -17,14 +17,12 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ./backend/data:/app/data
-      - ./backend/keys/server2_key:/app/keys/server2_key:ro
+      - ./data/backend:/app/data
+      - ./data/backend/keys/server2_key:/app/keys/server2_key:ro
     environment:
       NODE_ENV: production
 
   docs:
-    build:
-      context: ./docs
     image: ghcr.io/samay15jan/vpnlens-docs:latest
     container_name: vpnlens-docs
     restart: unless-stopped
@@ -38,8 +36,8 @@ services:
     network_mode: host
     volumes:
       - ./configs/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
+      - ./data/caddy/data:/data
+      - ./data/caddy/config:/config
     depends_on:
       - frontend
       - docs
@@ -51,7 +49,7 @@ services:
     command: serve
     volumes:
       - ./configs/headscale/config.yml:/etc/headscale/config.yaml:ro
-      - headscale_data:/var/lib/headscale
+      - ./data/headscale:/var/lib/headscale
 
   wireguard:
     image: ghcr.io/wg-easy/wg-easy:15
@@ -63,18 +61,8 @@ services:
       - WG_HOST=samay15jan.com
       - WG_DEFAULT_DNS=1.1.1.1
     volumes:
-      - wg_easy_data:/etc/wireguard
+      - ./data/wireguard:/etc/wireguard
       - /lib/modules:/lib/modules:ro
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
-
-networks:
-  caddy:
-    external: true
-
-volumes:
-  caddy_data:
-  caddy_config:
-  headscale_data:
-  wg_easy_data:
