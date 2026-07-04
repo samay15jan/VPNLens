@@ -1,0 +1,106 @@
+input: docs
+output: .retype
+
+url: docs.vpnlens.samay15jan.com
+
+branding:
+  title: VPNLens
+  label: Documentation
+
+favicon: assets/favicon.svg
+logo: assets/logo.svg
+
+search:
+  hotkeys:
+    - "/"
+
+edit:
+  repo: https://github.com/samay15jan/VPNLens
+  branch: main
+
+links:
+  - text: GitHub
+    link: https://github.com/samay15jan/VPNLens
+
+  - text: Live Demo
+    link: https://vpnlens.samay15jan.com
+
+  - text: Backend
+    link: https://backend.vpnlens.samay15jan.com
+
+footer:
+  copyright: "&copy; {{ year }} VPNLens"
+
+breadcrumb:
+  home: Home
+
+generator:
+  directoryIndex:
+    append: true
+
+nav:
+
+  - text: Introduction
+    link: index.md
+
+  - text: Architecture
+    children:
+      - text: System Architecture
+        link: architecture.md
+      - text: Infrastructure
+        link: infrastructure.md
+      - text: Deployment
+        link: deployment.md
+
+  - text: Benchmarking
+    children:
+      - text: Benchmarking
+        link: benchmarking.md
+      - text: Methodology
+        link: methodology.md
+
+  - text: Implementation
+    children:
+      - text: Software Architecture
+        link: implementation.md
+      - text: API Reference
+        link: api.md
+      - text: Automation Scripts
+        link: scripts.md
+
+  - text: Engineering
+    children:
+      - text: Development History
+        link: development-history.md
+      - text: Challenges
+        link: challenges.md
+      - text: Design Decisions
+        link: design-decisions.md
+      - text: Lessons Learned
+        link: lessons-learned.md
+
+  - text: Project
+    children:
+      - text: Roadmap
+        link: roadmap.md
+      - text: Acknowledgements
+        link: acknowledgements.md
+
+  - text: Academic
+    children:
+      - text: Synopsis
+        link: reports/Synopsis.pdf
+      - text: Weekly Progress Reports
+        children:
+          - text: WPR 1
+            link: reports/WPR-1.pdf
+          - text: WPR 2
+            link: reports/WPR-2.pdf
+          - text: WPR 3
+            link: reports/WPR-3.pdf
+          - text: WPR 4
+            link: reports/WPR-4.pdf
+          - text: WPR 5
+            link: reports/WPR-5.pdf
+      - text: Final Report
+        link: reports/Final_Report.pdf

@@ -14,26 +14,27 @@ export default function LatencyChart({
   color,
 }) {
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-5">
-      <div className="mb-6">
-        <h2 className="text-lg font-medium text-white">
+    <div className="rounded-lg border border-zinc-800 bg-zinc-900/40 p-5">
+      <div className="mb-5">
+        <h2 className="text-sm font-medium text-zinc-300">
           {title}
         </h2>
       </div>
 
-      <div className="h-[320px]">
+      <div className="h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
             <CartesianGrid
-              stroke="#1e293b"
+              stroke="#27272A"
               strokeDasharray="3 3"
+              vertical={false}
             />
 
             <XAxis
               dataKey="time"
               tick={{
-                fill: "#94a3b8",
-                fontSize: 12,
+                fill: "#71717A",
+                fontSize: 11,
               }}
               axisLine={false}
               tickLine={false}
@@ -41,8 +42,8 @@ export default function LatencyChart({
 
             <YAxis
               tick={{
-                fill: "#94a3b8",
-                fontSize: 12,
+                fill: "#71717A",
+                fontSize: 11,
               }}
               axisLine={false}
               tickLine={false}
@@ -51,10 +52,11 @@ export default function LatencyChart({
 
             <Tooltip
               contentStyle={{
-                backgroundColor: "#020617",
-                border: "1px solid #334155",
-                borderRadius: "12px",
-                color: "#fff",
+                backgroundColor: "#111113",
+                border: "1px solid #27272A",
+                borderRadius: "8px",
+                color: "#FAFAFA",
+                fontSize: "13px",
               }}
             />
 
@@ -62,9 +64,9 @@ export default function LatencyChart({
               type="monotone"
               dataKey="latency"
               stroke={color}
-              strokeWidth={3}
+              strokeWidth={2}
               dot={false}
-              activeDot={{ r: 5 }}
+              activeDot={{ r: 4 }}
             />
           </LineChart>
         </ResponsiveContainer>

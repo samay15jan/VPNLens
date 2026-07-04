@@ -26,31 +26,29 @@ export default function StartBenchmarkModal({ onClose, onStart }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-      <div className="relative w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-8 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="relative w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-950 p-7 shadow-[0_2px_6px_rgba(0,0,0,0.18)]">
         {/* Close */}
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 text-slate-500 hover:text-white transition"
+          className="absolute right-4 top-4 text-zinc-600 hover:text-zinc-300 transition"
         >
-          <X size={20} />
+          <X size={18} />
         </button>
 
         {/* Icon + title */}
-        <div className="mb-6 flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-blue-500/30 bg-blue-500/10">
-            <Shield size={24} className="text-blue-400" />
-          </div>
+        <div className="mb-6 flex items-center gap-3.5">
+          <Shield size={20} className="text-zinc-400" strokeWidth={1.75} />
           <div>
-            <h2 className="text-xl font-semibold text-white">Run Benchmark</h2>
-            <p className="mt-0.5 text-sm text-slate-400">
+            <h2 className="text-base font-medium text-zinc-50">Run benchmark</h2>
+            <p className="mt-0.5 text-sm text-zinc-500">
               Tests WireGuard then Headscale end-to-end
             </p>
           </div>
         </div>
 
         {/* What will happen */}
-        <ul className="mb-6 space-y-2 text-sm text-slate-400">
+        <ul className="mb-6 space-y-2 text-sm text-zinc-500">
           {[
             "VMs are provisioned via Terraform",
             "WireGuard tunnel tested first (~2 min)",
@@ -58,8 +56,8 @@ export default function StartBenchmarkModal({ onClose, onStart }) {
             "Results posted to dashboard in real time",
             "Full report emailed when complete",
           ].map((step, i) => (
-            <li key={i} className="flex items-start gap-2">
-              <span className="mt-0.5 h-4 w-4 shrink-0 rounded-full border border-blue-500/40 bg-blue-500/10 text-center text-[10px] leading-4 text-blue-400">
+            <li key={i} className="flex items-start gap-2.5">
+              <span className="mt-0.5 h-4 w-4 shrink-0 rounded-full border border-zinc-700 text-center text-[10px] leading-4 text-zinc-500">
                 {i + 1}
               </span>
               {step}
@@ -68,7 +66,7 @@ export default function StartBenchmarkModal({ onClose, onStart }) {
         </ul>
 
         {/* Email input */}
-        <label className="block text-sm text-slate-400 mb-1.5">
+        <label className="block text-sm text-zinc-500 mb-1.5">
           Email for report
         </label>
         <input
@@ -77,24 +75,24 @@ export default function StartBenchmarkModal({ onClose, onStart }) {
           onChange={(e) => { setEmail(e.target.value); setError(""); }}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           placeholder="you@example.com"
-          className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30"
+          className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 outline-none focus:border-zinc-600"
         />
-        {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
+        {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
 
         {/* Actions */}
         <div className="mt-6 flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 rounded-lg border border-slate-700 py-2.5 text-sm text-slate-400 hover:bg-slate-800 transition"
+            className="flex-1 rounded-md border border-zinc-800 py-2.5 text-sm text-zinc-400 hover:bg-zinc-900 transition"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={submitting}
-            className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-blue-600 py-2.5 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-60 transition"
+            className="flex flex-1 items-center justify-center gap-2 rounded-md bg-blue-600 py-2.5 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-60 transition"
           >
-            {submitting ? <><Loader2 size={16} className="animate-spin" /> Starting…</> : "Start Benchmark"}
+            {submitting ? <><Loader2 size={16} className="animate-spin" /> Starting…</> : "Start benchmark"}
           </button>
         </div>
       </div>

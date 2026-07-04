@@ -15,63 +15,68 @@ export default function BenchmarkHistory({ data }) {
   const end = Math.min(safePage * PAGE_SIZE + PAGE_SIZE, data.length);
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-950/70">
-      <div className="border-b border-slate-800 px-6 py-4">
-        <h2 className="text-lg font-medium text-white">Benchmark History</h2>
+    <div className="rounded-lg border border-zinc-800 bg-zinc-900/40">
+      <div className="border-b border-zinc-800 px-6 py-4">
+        <h2 className="text-sm font-medium text-zinc-300">Benchmark history</h2>
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-slate-800 text-left text-sm text-slate-400">
-              <th className="px-6 py-4">Timestamp</th>
-              <th className="px-4 py-4">Mode</th>
-              <th className="px-4 py-4">Duration</th>
-              <th className="px-4 py-4">Avg Latency</th>
-              <th className="px-4 py-4">Packet Loss</th>
-              <th className="px-4 py-4">Throughput</th>
-              <th className="px-4 py-4">CPU</th>
-              <th className="px-4 py-4">Result</th>
+            <tr className="border-b border-zinc-800 text-left text-xs uppercase tracking-wider text-zinc-600">
+              <th className="px-6 py-3 font-medium">Timestamp</th>
+              <th className="px-4 py-3 font-medium">Mode</th>
+              <th className="px-4 py-3 font-medium">Duration</th>
+              <th className="px-4 py-3 font-medium">Avg latency</th>
+              <th className="px-4 py-3 font-medium">Packet loss</th>
+              <th className="px-4 py-3 font-medium">Throughput</th>
+              <th className="px-4 py-3 font-medium">CPU</th>
+              <th className="px-4 py-3 font-medium">Result</th>
             </tr>
           </thead>
           <tbody>
             {data.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-6 py-10 text-center text-slate-500">
-                  No benchmark results yet. POST to <code className="text-slate-400">/api/results</code> to get started.
+                <td colSpan={8} className="px-6 py-10 text-center text-sm text-zinc-600">
+                  No benchmark results yet. POST to{" "}
+                  <code className="text-zinc-500">/api/results</code> to get started.
                 </td>
               </tr>
             ) : (
               pageData.map((row) => (
-                <tr key={row.id} className="border-b border-slate-800/50 hover:bg-slate-900/50">
-                  <td className="px-6 py-4 text-sm text-slate-300">{row.timestamp}</td>
+                <tr key={row.id} className="border-b border-zinc-800/60 hover:bg-zinc-900/60">
+                  <td className="px-6 py-4 text-sm text-zinc-400">{row.timestamp}</td>
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-2">
-                      <span className={`h-2 w-2 rounded-full ${row.mode === "WireGuard" ? "bg-blue-500" : "bg-cyan-400"}`} />
-                      <span className="text-sm text-slate-200">{row.mode}</span>
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full ${
+                          row.mode === "WireGuard" ? "bg-blue-500" : "bg-slate-500"
+                        }`}
+                      />
+                      <span className="text-sm text-zinc-200">{row.mode}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-4 text-sm text-slate-300">{row.duration}</td>
-                  <td className="px-4 py-4 text-sm text-slate-300">
+                  <td className="px-4 py-4 text-sm text-zinc-400">{row.duration}</td>
+                  <td className="px-4 py-4 text-sm text-zinc-400">
                     {row.latency !== "—" ? `${row.latency} ms` : "—"}
                   </td>
-                  <td className="px-4 py-4 text-sm text-slate-300">
+                  <td className="px-4 py-4 text-sm text-zinc-400">
                     {row.packetLoss !== "—" ? `${row.packetLoss}%` : "—"}
                   </td>
-                  <td className="px-4 py-4 text-sm text-slate-300">
+                  <td className="px-4 py-4 text-sm text-zinc-400">
                     {row.throughput !== "—" ? `${row.throughput} Mbps` : "—"}
                   </td>
-                  <td className="px-4 py-4 text-sm text-slate-300">
+                  <td className="px-4 py-4 text-sm text-zinc-400">
                     {row.cpu !== "—" ? `${row.cpu}%` : "—"}
                   </td>
                   <td className="px-4 py-4">
                     {row.status === "Success" ? (
-                      <span className="flex items-center gap-2 text-green-400">
-                        <CheckCircle2 size={16} /> Success
+                      <span className="flex items-center gap-1.5 text-sm text-green-500">
+                        <CheckCircle2 size={14} /> Success
                       </span>
                     ) : (
-                      <span className="flex items-center gap-2 text-yellow-400">
-                        <XCircle size={16} /> {row.status}
+                      <span className="flex items-center gap-1.5 text-sm text-amber-500">
+                        <XCircle size={14} /> {row.status}
                       </span>
                     )}
                   </td>
@@ -83,29 +88,29 @@ export default function BenchmarkHistory({ data }) {
       </div>
 
       <div className="flex items-center justify-between px-6 py-4">
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-zinc-500">
           {data.length === 0
             ? "No results"
             : `Showing ${start}–${end} of ${data.length}`}
         </p>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <button
             onClick={() => setPage((p) => Math.max(0, p - 1))}
             disabled={safePage === 0}
-            className="rounded border border-slate-700 p-2 text-slate-400 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="rounded-md border border-zinc-800 p-1.5 text-zinc-500 hover:bg-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            <ChevronLeft size={16} />
+            <ChevronLeft size={15} />
           </button>
 
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i}
               onClick={() => setPage(i)}
-              className={`rounded px-3 py-1.5 text-sm ${
+              className={`rounded-md px-2.5 py-1 text-sm ${
                 i === safePage
                   ? "bg-blue-600 text-white"
-                  : "border border-slate-700 text-slate-400 hover:bg-slate-800"
+                  : "border border-zinc-800 text-zinc-500 hover:bg-zinc-800"
               }`}
             >
               {i + 1}
@@ -115,9 +120,9 @@ export default function BenchmarkHistory({ data }) {
           <button
             onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
             disabled={safePage === totalPages - 1}
-            className="rounded border border-slate-700 p-2 text-slate-400 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="rounded-md border border-zinc-800 p-1.5 text-zinc-500 hover:bg-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            <ChevronRight size={16} />
+            <ChevronRight size={15} />
           </button>
         </div>
       </div>

@@ -66,21 +66,21 @@ export default function ReportView({ session, onBack }) {
   const wgWins = metrics.filter(m => winner(m.wg, m.hs, m.lowerIsBetter) === "wireguard").length;
   const hsWins = metrics.filter(m => winner(m.wg, m.hs, m.lowerIsBetter) === "headscale").length;
   const overallWinner = wgWins >= hsWins ? "WireGuard" : "Headscale";
-  const overallColor  = overallWinner === "WireGuard" ? "#3b82f6" : "#22d3ee";
+  const winCount = overallWinner === "WireGuard" ? wgWins : hsWins;
+  const overallColor  = overallWinner === "WireGuard" ? "#3B82F6" : "#64748B";
+  const overallScore = Math.round((winCount / metrics.length) * 100);
 
   return (
-    <div className="min-h-screen bg-[#050b16] text-white">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <div className="mx-auto max-w-5xl px-6 py-10 space-y-8">
 
         {/* Report header */}
         <div className="flex items-start justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-blue-500/30 bg-blue-500/10">
-              <Shield size={24} className="text-blue-400" />
-            </div>
+          <div className="flex items-center gap-3.5">
+            <Shield size={20} className="text-zinc-400" strokeWidth={1.75} />
             <div>
-              <h1 className="text-2xl font-semibold text-white">VPN Benchmark Report</h1>
-              <p className="text-sm text-slate-400 mt-0.5">
+              <h1 className="text-xl font-semibold tracking-tight text-zinc-50">VPN Benchmark Report</h1>
+              <p className="text-sm text-zinc-500 mt-0.5">
                 {session.token ? `${session.token.slice(0, 12)}…` : "Report"} ·{" "}
                 {new Date(session.created_at ?? Date.now()).toLocaleString()}
               </p>
@@ -89,13 +89,13 @@ export default function ReportView({ session, onBack }) {
           <div className="flex gap-3">
             <button
               onClick={onBack}
-              className="flex items-center gap-2 rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-400 hover:bg-slate-800 transition"
+              className="flex items-center gap-2 rounded-md border border-zinc-800 px-4 py-2 text-sm text-zinc-400 hover:bg-zinc-900 transition"
             >
               <ArrowLeft size={14} /> Dashboard
             </button>
             <button
               onClick={() => window.print()}
-              className="flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 transition"
+              className="flex items-center gap-2 rounded-md border border-zinc-800 px-4 py-2 text-sm text-zinc-400 hover:bg-zinc-900 transition"
             >
               <Download size={14} /> Save / Print
             </button>
@@ -103,71 +103,74 @@ export default function ReportView({ session, onBack }) {
         </div>
 
         {/* Verdict banner */}
-        <div
-          className="rounded-xl border p-6 text-center"
-          style={{ borderColor: `${overallColor}40`, backgroundColor: `${overallColor}08` }}
-        >
-          <p className="text-sm text-slate-400 mb-1">Overall Winner</p>
-          <p className="text-3xl font-bold" style={{ color: overallColor }}>{overallWinner}</p>
-          <p className="text-sm text-slate-400 mt-1">
-            Won {overallWinner === "WireGuard" ? wgWins : hsWins} of {metrics.length} metrics
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900/40 p-8 text-center">
+          <p className="text-xs uppercase tracking-wider text-zinc-500 mb-2">Overall winner</p>
+          <p className="text-4xl font-semibold tracking-tight" style={{ color: overallColor }}>
+            {overallWinner}
           </p>
+          <p className="text-sm text-zinc-500 mt-2">
+            Won {winCount} of {metrics.length} metrics
+          </p>
+          <div className="mx-auto mt-6 flex max-w-xs items-center justify-center gap-2">
+            <span className="text-3xl font-semibold text-zinc-50">{overallScore}</span>
+            <span className="text-sm text-zinc-500">/ 100 overall score</span>
+          </div>
         </div>
 
         {/* Radar chart */}
-        <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-6">
-          <h2 className="text-lg font-medium text-white mb-4">Performance Profile</h2>
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900/40 p-6">
+          <h2 className="text-sm font-medium text-zinc-300 mb-4">Performance profile</h2>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={radarData}>
-                <PolarGrid stroke="#1e293b" />
-                <PolarAngleAxis dataKey="metric" tick={{ fill: "#94a3b8", fontSize: 12 }} />
-                <Radar name="WireGuard" dataKey="WireGuard" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.15} strokeWidth={2} />
-                <Radar name="Headscale"  dataKey="Headscale"  stroke="#22d3ee" fill="#22d3ee" fillOpacity={0.15} strokeWidth={2} />
+                <PolarGrid stroke="#27272A" />
+                <PolarAngleAxis dataKey="metric" tick={{ fill: "#A1A1AA", fontSize: 12 }} />
+                <Radar name="WireGuard" dataKey="WireGuard" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.12} strokeWidth={2} />
+                <Radar name="Headscale"  dataKey="Headscale"  stroke="#64748B"  fill="#64748B"  fillOpacity={0.12} strokeWidth={2} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: "#020617", border: "1px solid #334155", borderRadius: "8px", color: "#fff" }}
+                  contentStyle={{ backgroundColor: "#111113", border: "1px solid #27272A", borderRadius: "8px", color: "#FAFAFA" }}
                   formatter={(v) => `${v.toFixed(0)} / 100`}
                 />
               </RadarChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex justify-center gap-6 text-sm text-slate-400">
-            <span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-blue-500" />WireGuard</span>
-            <span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-cyan-400" />Headscale</span>
+          <div className="flex justify-center gap-6 text-sm text-zinc-500">
+            <span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-blue-500" />WireGuard</span>
+            <span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-slate-500" />Headscale</span>
           </div>
         </div>
 
         {/* Metric-by-metric table */}
-        <div className="rounded-xl border border-slate-800 bg-slate-950/70 overflow-hidden">
-          <div className="border-b border-slate-800 px-6 py-4">
-            <h2 className="text-lg font-medium text-white">Detailed Comparison</h2>
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900/40 overflow-hidden">
+          <div className="border-b border-zinc-800 px-6 py-4">
+            <h2 className="text-sm font-medium text-zinc-300">Detailed comparison</h2>
           </div>
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-800 text-sm text-slate-400">
-                <th className="px-6 py-3 text-left">Metric</th>
-                <th className="px-4 py-3 text-right text-blue-400">WireGuard</th>
-                <th className="px-4 py-3 text-right text-cyan-400">Headscale</th>
-                <th className="px-4 py-3 text-center">Winner</th>
+              <tr className="border-b border-zinc-800 text-xs uppercase tracking-wider text-zinc-600">
+                <th className="px-6 py-3 text-left font-medium">Metric</th>
+                <th className="px-4 py-3 text-right font-medium text-blue-400">WireGuard</th>
+                <th className="px-4 py-3 text-right font-medium text-zinc-400">Headscale</th>
+                <th className="px-4 py-3 text-center font-medium">Winner</th>
               </tr>
             </thead>
             <tbody>
               {metrics.map((m) => {
                 const w = winner(m.wg, m.hs, m.lowerIsBetter);
                 return (
-                  <tr key={m.label} className="border-b border-slate-800/50 hover:bg-slate-900/30">
-                    <td className="px-6 py-3 text-sm text-slate-300">{m.label}</td>
-                    <td className={`px-4 py-3 text-right text-sm font-mono ${w === "wireguard" ? "text-blue-400 font-semibold" : "text-slate-300"}`}>
+                  <tr key={m.label} className="border-b border-zinc-800/60 hover:bg-zinc-900/60">
+                    <td className="px-6 py-3 text-sm text-zinc-400">{m.label}</td>
+                    <td className={`px-4 py-3 text-right text-sm font-mono ${w === "wireguard" ? "text-blue-400 font-semibold" : "text-zinc-400"}`}>
                       {m.wg != null ? `${m.wg} ${m.unit}` : "—"}
                     </td>
-                    <td className={`px-4 py-3 text-right text-sm font-mono ${w === "headscale" ? "text-cyan-400 font-semibold" : "text-slate-300"}`}>
+                    <td className={`px-4 py-3 text-right text-sm font-mono ${w === "headscale" ? "text-zinc-200 font-semibold" : "text-zinc-400"}`}>
                       {m.hs != null ? `${m.hs} ${m.unit}` : "—"}
                     </td>
                     <td className="px-4 py-3 text-center">
                       {w ? (
                         <span
                           className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
-                          style={{ backgroundColor: `${w === "wireguard" ? "#3b82f6" : "#22d3ee"}18`, color: w === "wireguard" ? "#3b82f6" : "#22d3ee" }}
+                          style={{ backgroundColor: `${w === "wireguard" ? "#3B82F6" : "#64748B"}18`, color: w === "wireguard" ? "#3B82F6" : "#94A3B8" }}
                         >
                           <CheckCircle2 size={11} />
                           {w === "wireguard" ? "WireGuard" : "Headscale"}
@@ -182,7 +185,7 @@ export default function ReportView({ session, onBack }) {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs text-slate-600 pb-4">
+        <p className="text-center text-xs text-zinc-700 pb-4">
           VPNLens · B.Tech IT 2026 · Samay Kumar
         </p>
       </div>

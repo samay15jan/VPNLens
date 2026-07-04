@@ -33,6 +33,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
+    "retypeapp": "^4.6.0",
     "vite": "^8.0.12",
     "vite-tsconfig-paths": "^6.1.1"
   }

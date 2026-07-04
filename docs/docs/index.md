@@ -1,3 +1,9 @@
+---
+title: Home
+label: Home
+order: 160
+description: Practical engineering insights and reflections gained throughout the development of VPNLens.
+---
 
 #  VPNLens
 
@@ -8,8 +14,6 @@ VPNLens began as a university internship project to compare the performance char
 The core philosophy of this project is deterministic automation: **eliminate manual intervention from the benchmarking lifecycle.** VPNLens handles VPN deployment, lifecycle management, network traffic generation, metric collection, and result distribution through a fully reproducible workflow.
 
 ---
-
-![alt text](/assets/workflow.png)
 
 #  Architecture
 
@@ -49,8 +53,6 @@ graph TD
 
 ```
 
-![alt text](assets/vpn_project_workflow.svg)
-
 ### Server 1: The Control Plane
 
 Server 1 acts as the management and orchestration hub. It hosts the infrastructure required to serve the platform and manage the VPN connections, but it does *not* execute the benchmarks.
@@ -60,7 +62,6 @@ Server 1 acts as the management and orchestration hub. It hosts the infrastructu
 * Backend API: `[https://backend.vpnlens.samay15jan.com](https://backend.vpnlens.samay15jan.com)`
 * WireGuard Endpoint: `[https://wg.vpnlens.samay15jan.com](https://wg.vpnlens.samay15jan.com)`
 * Headscale Control: `[https://hs.vpnlens.samay15jan.com](https://hs.vpnlens.samay15jan.com)`
-* Docs: `[https://docs.vpnlens.samay15jan.com](https://docs.vpnlens.samay15jan.com)`
 
 
 * **Workloads:** React frontend, Node.js backend, SQLite database, WireGuard server (via `wg-easy`), and the Headscale control server.

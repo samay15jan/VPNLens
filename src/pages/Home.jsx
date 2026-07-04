@@ -272,7 +272,7 @@ export default function Home() {
             : null;
 
     return (
-        <div className="min-h-screen bg-[#050b16] text-white">
+        <div className="min-h-screen bg-zinc-950 text-zinc-100">
 
             {showModal && (
                 <StartBenchmarkModal
@@ -283,7 +283,7 @@ export default function Home() {
                 />
             )}
 
-            <main className="mx-auto max-w-7xl space-y-8 px-6 py-6">
+            <main className="mx-auto max-w-7xl space-y-10 px-6 py-8">
 
                 <Header
                     mode={mode}
@@ -294,13 +294,13 @@ export default function Home() {
                     loading={loading}
                 />
                 {/* Run Benchmark */}
-                <div className="flex items-center justify-between rounded-xl border border-blue-500/20 bg-blue-500/5 px-6 py-4">
+                <div className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/40 px-6 py-4">
                     <div>
-                        <p className="text-sm font-medium text-white">
+                        <p className="text-sm font-medium text-zinc-200">
                             Ready to run a new benchmark?
                         </p>
 
-                        <p className="mt-0.5 text-xs text-slate-400">
+                        <p className="mt-0.5 text-xs text-zinc-500">
                             Spins up both VMs, tests WireGuard and Headscale, then emails the
                             final report.
                         </p>
@@ -308,7 +308,7 @@ export default function Home() {
 
                     <button
                         onClick={() => setShowModal(true)}
-                        className="flex shrink-0 items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-500"
+                        className="flex shrink-0 items-center gap-2 rounded-md bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-500"
                     >
                         <Play size={14} />
                         Run Benchmark
@@ -317,7 +317,7 @@ export default function Home() {
 
                 {/* KPI */}
                 <section>
-                    <h2 className="mb-4 text-xl font-semibold">
+                    <h2 className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-500">
                         Performance Summary
                     </h2>
 
@@ -331,7 +331,7 @@ export default function Home() {
                             }
                             unit="ms"
                             accentColor="#3b82f6"
-                            icon={<Activity size={22} />}
+                            icon={<Activity size={18} />}
                             comparison={
                                 latencyDiff != null
                                     ? `${latencyDiff > 0 ? "+" : ""}${latencyDiff} ms`
@@ -349,7 +349,7 @@ export default function Home() {
                             }
                             unit="%"
                             accentColor="#14b8a6"
-                            icon={<CircleDot size={22} />}
+                            icon={<CircleDot size={18} />}
                             comparison={
                                 packetDiff != null
                                     ? `${packetDiff > 0 ? "+" : ""}${packetDiff}%`
@@ -367,7 +367,7 @@ export default function Home() {
                             }
                             unit="%"
                             accentColor="#f59e0b"
-                            icon={<Cpu size={22} />}
+                            icon={<Cpu size={18} />}
                             comparison={
                                 cpuDiff != null
                                     ? `${cpuDiff > 0 ? "+" : ""}${cpuDiff}%`
@@ -380,7 +380,7 @@ export default function Home() {
                             title="Total Runs"
                             value={currentStats?.total_runs ?? (loading ? "…" : "0")}
                             accentColor="#a855f7"
-                            icon={<Clock3 size={22} />}
+                            icon={<Clock3 size={18} />}
                         />
                     </div>
                 </section>
@@ -406,7 +406,7 @@ export default function Home() {
 
                 {/* Latency */}
                 <section>
-                    <h2 className="mb-4 text-xl font-semibold">
+                    <h2 className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-500">
                         Latency Analysis
                     </h2>
 
@@ -428,14 +428,14 @@ export default function Home() {
                                     ? hsLatency
                                     : [{ time: "—", latency: 0 }]
                             }
-                            color="#22d3ee"
+                            color="#64748B"
                         />
                     </div>
                 </section>
 
                 {/* Throughput */}
                 <section>
-                    <h2 className="mb-4 text-xl font-semibold">
+                    <h2 className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-500">
                         Throughput Analysis
                     </h2>
 
@@ -457,7 +457,7 @@ export default function Home() {
                                     ? hsThroughput
                                     : [{ time: "—", value: 0 }]
                             }
-                            color="#22d3ee"
+                            color="#64748B"
                         />
                     </div>
                 </section>

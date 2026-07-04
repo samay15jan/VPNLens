@@ -23,47 +23,47 @@ export default function ThroughputChart({
   const last = values[values.length - 1];
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-5">
-      <div className="mb-4 flex items-center justify-between">
-        <h3
-          className="font-mono text-lg"
-          style={{ color }}
-        >
-          ● {title}
+    <div className="rounded-lg border border-zinc-800 bg-zinc-900/40 p-5">
+      <div className="mb-5 flex items-center justify-between">
+        <h3 className="text-sm font-medium text-zinc-300">
+          {title}
         </h3>
 
-        <div className="flex items-center gap-2 text-sm text-slate-400">
+        <span className="flex items-center gap-1.5 text-xs text-zinc-500">
+          <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
           Live
-          <span className="h-2 w-2 rounded-full bg-green-500" />
-        </div>
+        </span>
       </div>
 
-      <div className="h-[280px]">
+      <div className="h-[260px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data}>
             <CartesianGrid
-              stroke="#1e293b"
+              stroke="#27272A"
               strokeDasharray="3 3"
+              vertical={false}
             />
 
             <XAxis
               dataKey="time"
-              tick={{ fill: "#94a3b8", fontSize: 12 }}
+              tick={{ fill: "#71717A", fontSize: 11 }}
               axisLine={false}
               tickLine={false}
             />
 
             <YAxis
-              tick={{ fill: "#94a3b8", fontSize: 12 }}
+              tick={{ fill: "#71717A", fontSize: 11 }}
               axisLine={false}
               tickLine={false}
             />
 
             <Tooltip
               contentStyle={{
-                backgroundColor: "#020617",
-                border: "1px solid #1e293b",
+                backgroundColor: "#111113",
+                border: "1px solid #27272A",
                 borderRadius: "8px",
+                color: "#FAFAFA",
+                fontSize: "13px",
               }}
             />
 
@@ -76,21 +76,18 @@ export default function ThroughputChart({
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-6 text-sm font-mono">
-        <span style={{ color }}>
-          Avg: {avg.toFixed(1)} Mbps
+      <div className="mt-4 flex flex-wrap gap-5 text-xs text-zinc-500">
+        <span className="text-zinc-300">
+          Avg <span className="font-mono">{avg.toFixed(1)}</span> Mbps
         </span>
-
-        <span className="text-slate-400">
-          Min: {min.toFixed(1)} Mbps
+        <span>
+          Min <span className="font-mono">{min.toFixed(1)}</span> Mbps
         </span>
-
-        <span className="text-slate-400">
-          Max: {max.toFixed(1)} Mbps
+        <span>
+          Max <span className="font-mono">{max.toFixed(1)}</span> Mbps
         </span>
-
-        <span className="text-slate-400">
-          Last: {last.toFixed(1)} Mbps
+        <span>
+          Last <span className="font-mono">{last.toFixed(1)}</span> Mbps
         </span>
       </div>
     </div>

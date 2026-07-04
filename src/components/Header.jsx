@@ -7,58 +7,67 @@ export default function Header({ mode, setMode, onRefresh, sampleCount, lastRefr
     : null;
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-800 bg-slate-950/60 p-4 backdrop-blur-md">
+    <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-zinc-800 bg-zinc-900/40 px-5 py-4">
       <div className="flex items-center gap-6">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-lg border border-blue-500/30 bg-blue-500/10">
-            <Shield size={20} className="text-blue-500" />
-          </div>
-          <h1 className="text-xl font-medium text-white tracking-wide">VPNLens</h1>
+        <div className="flex items-center gap-2.5">
+          <Shield size={18} className="text-zinc-400" strokeWidth={1.75} />
+          <h1 className="text-base font-medium tracking-tight text-zinc-50">VPNLens</h1>
         </div>
 
-        <span className="text-green-400">● Benchmark Running</span>
+        <span className="hidden items-center gap-1.5 text-sm text-zinc-400 sm:flex">
+          <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+          Benchmark System
+        </span>
 
-        <span className="text-slate-400">
-          Samples: {sampleCount ?? "—"}
+        <span className="hidden text-sm text-zinc-500 sm:inline">
+          Samples <span className="text-zinc-300">{sampleCount ?? "—"}</span>
         </span>
 
         {refreshLabel && (
-          <span className="text-slate-400 text-sm">
-            Updated: {refreshLabel}
+          <span className="hidden text-sm text-zinc-500 md:inline">
+            Updated {refreshLabel}
           </span>
         )}
       </div>
 
-      <div className="flex overflow-hidden">
-        <div className="rounded-lg border border-slate-700">
+      <div className="flex items-center gap-3">
+        <div className="flex overflow-hidden rounded-md border border-zinc-800">
           <button
             onClick={() => setMode("wireguard")}
-            className={`px-4 py-2 text-sm ${mode === "wireguard" ? "bg-blue-600" : "bg-slate-900"}`}
+            className={`px-3.5 py-1.5 text-sm transition ${
+              mode === "wireguard"
+                ? "bg-blue-600 text-white"
+                : "bg-transparent text-zinc-400 hover:text-zinc-200"
+            }`}
           >
             WireGuard
           </button>
           <button
             onClick={() => setMode("headscale")}
-            className={`px-4 py-2 text-sm ${mode === "headscale" ? "bg-cyan-600" : "bg-slate-900"}`}
+            className={`px-3.5 py-1.5 text-sm transition ${
+              mode === "headscale"
+                ? "bg-zinc-700 text-white"
+                : "bg-transparent text-zinc-400 hover:text-zinc-200"
+            }`}
           >
             Headscale
           </button>
         </div>
 
-        <div className="flex items-center gap-4 mx-5">
-          <button
-            onClick={onRefresh}
-            title="Refresh data"
-            className={`text-slate-400 hover:text-white transition ${loading ? "animate-spin" : ""}`}
-          >
-            <RefreshCw size={18} />
-          </button>
+        <button
+          onClick={onRefresh}
+          title="Refresh data"
+          className={`rounded-md border border-zinc-800 p-2 text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-200 ${
+            loading ? "animate-spin" : ""
+          }`}
+        >
+          <RefreshCw size={15} />
+        </button>
 
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-            <span className="text-green-400 text-sm">Live</span>
-          </div>
-        </div>
+        <span className="flex items-center gap-1.5 text-sm text-green-500">
+          <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+          Live
+        </span>
       </div>
     </div>
   );
