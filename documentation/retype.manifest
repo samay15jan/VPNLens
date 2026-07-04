@@ -1,0 +1,309 @@
+{
+  "version": "4.6.0",
+  "created": "2026-07-04T04:07:42Z",
+  "files": [
+    {
+      "path": ".nojekyll"
+    },
+    {
+      "path": "01-introduction.md"
+    },
+    {
+      "path": "01-introduction/index.html"
+    },
+    {
+      "path": "02-architecture.md"
+    },
+    {
+      "path": "02-architecture/index.html"
+    },
+    {
+      "path": "03-infrastructure.md"
+    },
+    {
+      "path": "03-infrastructure/index.html"
+    },
+    {
+      "path": "04-deployment.md"
+    },
+    {
+      "path": "04-deployment/index.html"
+    },
+    {
+      "path": "05-benchmarking.md"
+    },
+    {
+      "path": "05-benchmarking/index.html"
+    },
+    {
+      "path": "06-methodology.md"
+    },
+    {
+      "path": "06-methodology/index.html"
+    },
+    {
+      "path": "07-implementation.md"
+    },
+    {
+      "path": "07-implementation/index.html"
+    },
+    {
+      "path": "08-api.md"
+    },
+    {
+      "path": "08-api/index.html"
+    },
+    {
+      "path": "09-scripts.md"
+    },
+    {
+      "path": "09-scripts/index.html"
+    },
+    {
+      "path": "10-development-history.md"
+    },
+    {
+      "path": "10-development-history/index.html"
+    },
+    {
+      "path": "11-challenges.md"
+    },
+    {
+      "path": "11-challenges/index.html"
+    },
+    {
+      "path": "12-roadmap.md"
+    },
+    {
+      "path": "12-roadmap/index.html"
+    },
+    {
+      "path": "13-acknowledgements.md"
+    },
+    {
+      "path": "13-acknowledgements/index.html"
+    },
+    {
+      "path": "14-design-decisions.md"
+    },
+    {
+      "path": "14-design-decisions/index.html"
+    },
+    {
+      "path": "15-lessons-learned.md"
+    },
+    {
+      "path": "15-lessons-learned/index.html"
+    },
+    {
+      "path": "404.html"
+    },
+    {
+      "path": "CNAME"
+    },
+    {
+      "path": "current.png",
+      "old": true
+    },
+    {
+      "path": "design.png",
+      "old": true
+    },
+    {
+      "path": "docs/01-introduction.md",
+      "old": true
+    },
+    {
+      "path": "docs/01-introduction/index.html",
+      "old": true
+    },
+    {
+      "path": "docs/02-architecture.md",
+      "old": true
+    },
+    {
+      "path": "docs/02-architecture/index.html",
+      "old": true
+    },
+    {
+      "path": "docs/03-infrastructure.md",
+      "old": true
+    },
+    {
+      "path": "docs/03-infrastructure/index.html",
+      "old": true
+    },
+    {
+      "path": "docs/04-deployment.md",
+      "old": true
+    },
+    {
+      "path": "docs/04-deployment/index.html",
+      "old": true
+    },
+    {
+      "path": "docs/05-benchmarking.md",
+      "old": true
+    },
+    {
+      "path": "docs/05-benchmarking/index.html",
+      "old": true
+    },
+    {
+      "path": "docs/06-methodology.md",
+      "old": true
+    },
+    {
+      "path": "docs/06-methodology/index.html",
+      "old": true
+    },
+    {
+      "path": "docs/07-implementation.md",
+      "old": true
+    },
+    {
+      "path": "docs/07-implementation/index.html",
+      "old": true
+    },
+    {
+      "path": "docs/08-api.md",
+      "old": true
+    },
+    {
+      "path": "docs/08-api/index.html",
+      "old": true
+    },
+    {
+      "path": "docs/09-scripts.md",
+      "old": true
+    },
+    {
+      "path": "docs/09-scripts/index.html",
+      "old": true
+    },
+    {
+      "path": "docs/10-development-history.md",
+      "old": true
+    },
+    {
+      "path": "docs/10-development-history/index.html",
+      "old": true
+    },
+    {
+      "path": "docs/11-challenges.md",
+      "old": true
+    },
+    {
+      "path": "docs/11-challenges/index.html",
+      "old": true
+    },
+    {
+      "path": "docs/12-roadmap.md",
+      "old": true
+    },
+    {
+      "path": "docs/12-roadmap/index.html",
+      "old": true
+    },
+    {
+      "path": "docs/13-acknowledgements.md",
+      "old": true
+    },
+    {
+      "path": "docs/13-acknowledgements/index.html",
+      "old": true
+    },
+    {
+      "path": "docs/14-design-decisions.md",
+      "old": true
+    },
+    {
+      "path": "docs/14-design-decisions/index.html",
+      "old": true
+    },
+    {
+      "path": "docs/15-lessons-learned.md",
+      "old": true
+    },
+    {
+      "path": "docs/15-lessons-learned/index.html",
+      "old": true
+    },
+    {
+      "path": "docs/index.html",
+      "old": true
+    },
+    {
+      "path": "docs/index.md",
+      "old": true
+    },
+    {
+      "path": "index.html"
+    },
+    {
+      "path": "index.md"
+    },
+    {
+      "path": "llms.txt"
+    },
+    {
+      "path": "resources/css/retype.css"
+    },
+    {
+      "path": "resources/fonts/Inter-italic-latin-var.woff2"
+    },
+    {
+      "path": "resources/fonts/Inter-roman-latin-var.woff2"
+    },
+    {
+      "path": "resources/js/config.js"
+    },
+    {
+      "path": "resources/js/instagram.js"
+    },
+    {
+      "path": "resources/js/lunr.js"
+    },
+    {
+      "path": "resources/js/mermaid.js"
+    },
+    {
+      "path": "resources/js/prism.js"
+    },
+    {
+      "path": "resources/js/retype.js"
+    },
+    {
+      "path": "resources/js/search.json"
+    },
+    {
+      "path": "resources/lunr.js.LICENSE.txt"
+    },
+    {
+      "path": "resources/mermaid.js.LICENSE.txt"
+    },
+    {
+      "path": "resources/prism.js.LICENSE.txt"
+    },
+    {
+      "path": "resources/retype.js.LICENSE.txt"
+    },
+    {
+      "path": "resources/retype.LICENSE.txt"
+    },
+    {
+      "path": "robots.txt"
+    },
+    {
+      "path": "sitemap.xml"
+    },
+    {
+      "path": "synopsis.pdf",
+      "old": true
+    },
+    {
+      "path": "vpn_project_workflow.svg",
+      "old": true
+    }
+  ]
+}

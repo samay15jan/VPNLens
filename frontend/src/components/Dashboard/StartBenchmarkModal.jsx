@@ -50,7 +50,6 @@ export default function StartBenchmarkModal({ onClose, onStart }) {
         {/* What will happen */}
         <ul className="mb-6 space-y-2 text-sm text-zinc-500">
           {[
-            "VMs are provisioned via Terraform",
             "WireGuard tunnel tested first (~2 min)",
             "Headscale tunnel tested second (~2 min)",
             "Results posted to dashboard in real time",
