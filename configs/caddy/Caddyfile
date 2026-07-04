@@ -19,5 +19,11 @@ wg.vpn.samay15jan.com {
 }
 
 hs.vpn.samay15jan.com {
-    reverse_proxy localhost:51822
+    handle_path /admin* {
+        reverse_proxy localhost:3003
+    }
+
+    handle {
+        reverse_proxy localhost:51822
+    }
 }

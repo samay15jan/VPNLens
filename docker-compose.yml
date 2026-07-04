@@ -47,6 +47,8 @@ services:
     container_name: vpnlens-headscale
     restart: unless-stopped
     command: serve
+    ports:
+      - "51822:8080"
     labels:
       - "me.tale.headplane.target=headscale"
     volumes:
