@@ -47,6 +47,8 @@ services:
     container_name: vpnlens-headscale
     restart: unless-stopped
     command: serve
+    labels:
+      - "me.tale.headplane.target=headscale"
     volumes:
       - ./configs/headscale/config.yml:/etc/headscale/config.yaml:ro
       - ./data/headscale:/var/lib/headscale
@@ -66,3 +68,17 @@ services:
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
+
+  headplane:
+    image: ghcr.io/tale/headplane:latest
+    container_name: vpnlens-headplane
+    restart: unless-stopped
+    ports:
+      - "3003:3000"
+    depends_on:
+      - headscale
+    volumes:
+      - ./configs/headplane/config.yml:/etc/headplane/config.yaml:ro
+      - ./data/headplane:/var/lib/headplane
+      - ./configs/headscale/config.yml:/etc/headscale/config.yaml
+      - /var/run/docker.sock:/var/run/docker.sock:ro
