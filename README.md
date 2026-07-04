@@ -299,13 +299,15 @@ cd vpnlens
 
 ```
 
-### 2. Configure Environment Variables
-
+### 2. Configure Environment Variables & Copy SSH keys
+ 
 Copy the example environment files for both the frontend and backend.
 
 ```bash
 cp backend/.env.example backend/.env
 cp src/.env.example src/.env
+cp /PATH/TO/SECOND/SERVER/SSH/KEY.key keys/server2.key 
+sudo chmod 600 keys/server2.key 
 
 ```
 

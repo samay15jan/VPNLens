@@ -296,7 +296,7 @@ Authenticate against your Headscale server:
 ```bash
 sudo tailscale up \
   --accept-dns=false \
-  --login-server=https://hs.vpnlens.samay15jan.com \
+  --login-server=https://hs.vpn.samay15jan.com \
   --authkey=<YOUR_AUTH_KEY>
 ```
 
@@ -307,6 +307,17 @@ tailscale status
 tailscale ip
 ```
 
+If some error comes up:
+
+```bash
+sudo tailscale logout
+sudo rm -rf /var/lib/tailscale/*
+sudo systemctl restart tailscaled
+sudo tailscale up \
+  --accept-dns=false \
+  --login-server=https://hs.vpn.samay15jan.com \
+  --authkey=<YOUR_AUTH_KEY>
+```
 ---
 
 ## Creating a Headscale Auth Key
@@ -329,6 +340,20 @@ docker exec -it vpnlens-headscale \
 
 Copy the generated auth key and use it with the `tailscale up` command shown above.
 
+> **Note**
+>
+> Although Headscale is running on **Server 1** inside Docker, it is **not automatically part of the tailnet**. The Headscale server itself must also join the network using the Tailscale client, just like any other machine.
+>
+> After setting up Headscale, register **Server 1** first and then register **Server 2** (or any additional clients) using their respective auth keys. Once both nodes appear in `headscale nodes list`, they can communicate with each other over the tailnet.
+>
+> If your node IPs differ from the default benchmark configuration, verify them with:
+>
+> ```bash
+> docker exec -it vpnlens-headscale \
+>   headscale nodes list
+> ```
+>
+> Update the benchmark configuration at ./backend/scripts/run-benchmark.sh if necessary so it targets the correct Tailscale IP addresses.
 
 ## Deployment Workflow
 
