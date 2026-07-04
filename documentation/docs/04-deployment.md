@@ -230,6 +230,106 @@ The compiled images are tagged with the Git commit hash and published to a centr
 
 ---
 
+
+## Benchmark Node Setup
+
+The benchmark node is responsible for connecting to both VPN solutions and executing the benchmarking scripts. It requires both WireGuard and Tailscale (Headscale).
+
+## Prerequisites
+
+```bash
+sudo apt update
+sudo apt install wireguard-tools resolvconf iperf3 -y
+````
+
+---
+
+## WireGuard Client Setup
+
+Copy your client configuration to the default WireGuard location.
+
+```bash
+sudo cp <CONFIG>.conf /etc/wireguard/wg0.conf
+```
+
+> [!WARNING]
+> If you are connected to this machine over SSH, enabling a full-tunnel WireGuard configuration (`AllowedIPs = 0.0.0.0/0`) will route SSH traffic through the VPN and may immediately terminate your current SSH session.
+
+For remote benchmark nodes, use a split-tunnel configuration instead:
+
+```ini
+AllowedIPs = 10.8.0.0/24
+```
+
+Replace `10.8.0.0/24` with the network(s) you actually want reachable through the VPN.
+
+Bring the interface online:
+
+```bash
+sudo wg-quick up wg0
+```
+
+Verify the connection:
+
+```bash
+sudo wg show
+```
+
+To disconnect:
+
+```bash
+sudo wg-quick down wg0
+```
+
+---
+
+## Headscale (Tailscale) Client Setup
+
+Install Tailscale:
+
+```bash
+curl -fsSL https://tailscale.com/install.sh | sh
+```
+
+Authenticate against your Headscale server:
+
+```bash
+sudo tailscale up \
+  --accept-dns=false \
+  --login-server=https://hs.vpnlens.samay15jan.com \
+  --authkey=<YOUR_AUTH_KEY>
+```
+
+Verify the connection:
+
+```bash
+tailscale status
+tailscale ip
+```
+
+---
+
+## Creating a Headscale Auth Key
+
+On the Headscale server:
+
+```bash
+docker exec -it vpnlens-headscale \
+  headscale users create vpnlens
+
+docker exec -it vpnlens-headscale \
+  headscale users list
+
+docker exec -it vpnlens-headscale \
+  headscale preauthkeys create --user 1
+
+docker exec -it vpnlens-headscale \
+  headscale nodes list
+```
+
+Copy the generated auth key and use it with the `tailscale up` command shown above.
+
+
 ## Deployment Workflow
 
 The complete, end-to-end flow of pushing code to interacting with a live benchmark operates as follows:
