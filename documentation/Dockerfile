@@ -1,5 +1,4 @@
-# Build Retype site
-FROM node:22-alpine AS builder
+FROM node:22-slim AS builder
 
 WORKDIR /docs
 
@@ -9,7 +8,6 @@ COPY . .
 
 RUN retype build
 
-# Serve with nginx
 FROM nginx:alpine
 
 COPY --from=builder /docs/.retype /usr/share/nginx/html
