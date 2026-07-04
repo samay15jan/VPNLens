@@ -28,7 +28,7 @@ jobs:
       - name: Build & Push Frontend
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ./frontend
           file: ./frontend/Dockerfile
           push: true
           tags: ghcr.io/samay15jan/vpnlens-frontend:latest
@@ -55,7 +55,7 @@ jobs:
           push: true
           tags: ghcr.io/samay15jan/vpnlens-backend:latest
 
-  docs:
+  documentation:
     runs-on: ubuntu-latest
 
     steps:
@@ -69,10 +69,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & Push Docs
+      - name: Build & Push documentation
         uses: docker/build-push-action@v6
         with:
-          context: ./docs
+          context: ./documentation
           file: ./documentation/Dockerfile
           push: true
           tags: ghcr.io/samay15jan/vpnlens-docs:latest
