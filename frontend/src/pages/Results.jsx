@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import ReportView from "../components/Dashboard/ReportView";
+import ReportView from "../components/ReportView";
 import { getReport } from "../services/api";
 
 export default function Results() {

@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
-import StatCard from "../components/StatCard";
-import LatencyChart from "../components/LatencyChart";
-import ThroughputChart from "../components/ThroughputChart";
-import ResourceChart from "../components/ResourceChart";
-import NetworkTopology from "../components/NetworkTopology";
-import BenchmarkHistory from "../components/BenchmarkHistory";
-import StartBenchmarkModal from "../components/StartBenchmarkModal";
+import StatCard from "./StatCard";
+import LatencyChart from "./LatencyChart";
+import ThroughputChart from "./ThroughputChart";
+import ResourceChart from "./ResourceChart";
+import NetworkTopology from "./NetworkTopology";
+import BenchmarkHistory from "./BenchmarkHistory";
+import StartBenchmarkModal from "./StartBenchmarkModal";
 
 import {
     Activity,
@@ -19,8 +19,7 @@ import {
     CircleDot,
     Play,
     MemoryStick,
-    ArrowUp,
-    ArrowDown,
+    Gauge,
     Timer,
 } from "lucide-react";
 
@@ -185,9 +184,7 @@ export default function Home() {
                     getSummary(),
                 ]);
 
-            setResults(
-                Array.isArray(resultsData) ? resultsData : []
-            );
+            setResults(resultsData);
 
             setSummary(
                 indexSummary(summaryData)
@@ -304,7 +301,6 @@ export default function Home() {
 
     const otherAvgRam = avgField(results, otherVpn, "mem_avg_mb");
     const otherAvgThroughputUp = avgField(results, otherVpn, "throughput_upload");
-    const otherAvgThroughputDown = avgField(results, otherVpn, "throughput_download");
     const otherAvgConnTime = avgField(results, otherVpn, "connection_time_s");
 
     const otherLabel =
@@ -343,8 +339,7 @@ export default function Home() {
             : null;
 
     const ramDiff = diff(avgRam, otherAvgRam, 0);
-    const throughputUpDiff = diff(avgThroughputUp, otherAvgThroughputUp, 1);
-    const throughputDownDiff = diff(avgThroughputDown, otherAvgThroughputDown, 1);
+    const throughputDiff = diff(avgThroughputUp, otherAvgThroughputUp, 1);
     const connTimeDiff = diff(avgConnTime, otherAvgConnTime, 2);
 
     return (
@@ -487,28 +482,14 @@ export default function Home() {
                         />
 
                         <StatCard
-                            title="Avg Upload"
+                            title="Average Throughput"
                             value={avgThroughputUp != null ? avgThroughputUp.toFixed(1) : "—"}
                             unit="Mbps"
                             accentColor="#6366f1"
-                            icon={<ArrowUp size={16} />}
+                            icon={<Gauge size={16} />}
                             comparison={
-                                throughputUpDiff != null
-                                    ? `${throughputUpDiff > 0 ? "+" : ""}${throughputUpDiff} Mbps`
-                                    : null
-                            }
-                            comparisonLabel={otherLabel}
-                        />
-
-                        <StatCard
-                            title="Avg Download"
-                            value={avgThroughputDown != null ? avgThroughputDown.toFixed(1) : "—"}
-                            unit="Mbps"
-                            accentColor="#8b5cf6"
-                            icon={<ArrowDown size={16} />}
-                            comparison={
-                                throughputDownDiff != null
-                                    ? `${throughputDownDiff > 0 ? "+" : ""}${throughputDownDiff} Mbps`
+                                throughputDiff != null
+                                    ? `${throughputDiff > 0 ? "+" : ""}${throughputDiff} Mbps`
                                     : null
                             }
                             comparisonLabel={otherLabel}
